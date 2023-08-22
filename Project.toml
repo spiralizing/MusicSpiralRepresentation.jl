@@ -1,0 +1,13 @@
+name = "MusicSpiralRepresentation"
+uuid = "084314cc-b9e9-488e-87b3-80549fd3be19"
+authors = ["'Alfredo González-Espinoza'"]
+version = "1.0.0-DEV"
+
+[compat]
+julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]

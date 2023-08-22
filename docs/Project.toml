@@ -1,0 +1,3 @@
+[deps]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+MusicSpiralRepresentation = "084314cc-b9e9-488e-87b3-80549fd3be19"
