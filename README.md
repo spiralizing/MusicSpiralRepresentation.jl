@@ -70,7 +70,6 @@ for csv files:
 ```julia
 import MusicSpiralRepresentation
 const msr = MusicSpiralRepresentation
-using PyCall
 using DelimitedFiles
 
 csv_piece = readdlm("name_of_file.csv",',')
