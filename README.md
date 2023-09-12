@@ -29,3 +29,50 @@ m21 = pyimport("music21")
 
 mxl_piece = m21.converter.parse("name_of_file.mxl")
 ```
+
+### To load MIDI (CSV) files
+
+You can also load MIDI files indirectly by converting them to CSV files first with [midicsv](https://www.fourmilab.ch/webtools/midicsv/) in a terminal:
+
+```
+$ midicsv name_of_file.mid > name_of_file.csv 
+```
+
+and to load it in Julia
+
+```julia
+using DelimitedFiles
+
+csv_piece = readdlm("name_of_file.csv",',')
+
+```
+
+### Creating a DataFrame from MusicXML and CSV files
+
+You can create a `DataFrame` containing the information of the music score/piece with `get_xml_df` or `get_csv_df`, where the resulting data frame returns the format:
+
+| `measure`| `Time signature`|`start` | `end` | `duration` | `pitch`| 
+
+for xml files:
+
+```julia
+import MusicSpiralRepresentation
+const msr = MusicSpiralRepresentation
+using PyCall
+m21 = pyimport("music21")
+
+mxl_piece = m21.converter.parse("name_of_file.mxl")
+piece_df = msr.get_xml_df(mxl_piece)
+```
+
+for csv files:
+
+```julia
+import MusicSpiralRepresentation
+const msr = MusicSpiralRepresentation
+using PyCall
+using DelimitedFiles
+
+csv_piece = readdlm("name_of_file.csv",',')
+piece_df = msr.get_csv_df(csv_piece)
+```
