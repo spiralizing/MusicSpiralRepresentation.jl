@@ -13,6 +13,7 @@ makedocs(;
         canonical="https://spiralizing.github.io/MusicSpiralRepresentation.jl",
         edit_link="main",
         assets=String[],
+        mathengine=Documenter.MathJax3(),
     ),
     pages=[
         "Home" => "index.md",
