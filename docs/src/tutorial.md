@@ -67,9 +67,9 @@ Images.load("img/SpiralArray_Keys.png")
 
 In the spiral array, a pitch $k$ and a pitch $k+n$ are separated by $n$ fifths and are defined as:
 
-$$
+```math
     \vec{P}(k) = \begin{bmatrix} x_k \\ y_k \\ z_k \end{bmatrix} = \begin{bmatrix} r \sin\frac{k\pi}{2} \\ r \cos\frac{k\pi}{2} \\ k h\end{bmatrix} ,
-$$
+```
 
 
 
@@ -78,43 +78,45 @@ where $r$ and $h$ are fixed: $r=1$ and $h=(2/15)^{1/2}$. And $k$ is a number rep
 
 The major and minor chords are constructed as linear combinations of pitches:
 
-$$
-    \vec{C}_M(k) = w_1 \vec{P}(k) + w_2 \vec{P}(k+1) + w_3 \vec{P}(k+4),  
-$$
+```math
+    \vec{C}_M(k) = w_1 \vec{P}(k) + w_2 \vec{P}(k+1) + w_3 \vec{P}(k+4),
+```
 
 and
 
-$$
-    \vec{C}_m(k) = u_1 \vec{P}(k) + u_2 \vec{P}(k+1) + u_3 \vec{P}(k-3),  
-$$
+```math
+    \vec{C}_m(k) = u_1 \vec{P}(k) + u_2 \vec{P}(k+1) + u_3 \vec{P}(k-3),
+```
 
 where $k+1, k+4$ and $k-3$ are the tonic, major third and minor third respectively in the spiral representation. In the same fashion, the major key representations are defined from the major chords:
 
-$$
-    \vec{T}_M(k) = \omega_1 \vec{C}_M(k) + \omega_2 \vec{C}_M(k+1) + \omega_3 \vec{C}_M(k-1),  
-$$
+```math
+    \vec{T}_M(k) = \omega_1 \vec{C}_M(k) + \omega_2 \vec{C}_M(k+1) + \omega_3 \vec{C}_M(k-1),
+```
 
 
 
 
 where $k+1$ and $k-1$ are the dominant and the subdominant chords, the minor key representations are given by:
 
-$$
+```math
 \begin{aligned}
     \vec{T}_m(k) = {} & \nu_1 \vec{C}_m(k) \\
                 & + \nu_2 [ \alpha \vec{C}_M(k+1) + (1-\alpha) \vec{C}_m(k+1) ] \\
                 & + \nu_3 [ \beta \vec{C}_m(k-1) + (1-\beta) \vec{C}_M(k-1)],
 \end{aligned}
-$$
+```
 
-this definition require two extra parameters to weight the different scale patterns that are presented in minor keys (natural, harmonic minor and melodic minor) given by the major and minor dominant and subdominant chords, the parameters $\alpha$ and $\beta$ are set equally: $$
+this definition require two extra parameters to weight the different scale patterns that are presented in minor keys (natural, harmonic minor and melodic minor) given by the major and minor dominant and subdominant chords, the parameters $\alpha$ and $\beta$ are set equally:
+
+```math
 \beta = \alpha = 0.75.
-$$
+```
 
 Each weighting vector in the pitch, chord and keys definitions follow $w_1 \geq w_2 \geq w_3 > 0$ and $\sum_i w_i =1$, to consider some notes (or chords) more important than the others (e.g. the tonic in a chord would be more important than the fifth and both more important than the third). For convenience, all these vectors are given equal values: 
-$$
-\vec{\nu} = \vec{\omega} = \vec{u} = \vec{w} = \{0.536, 0.274, 0.19\} 
-$$
+```math
+\vec{\nu} = \vec{\omega} = \vec{u} = \vec{w} = \{0.536, 0.274, 0.19\}
+```
 
 making a total of $2+2+3*4 = 16$ parameters for the model. Parameters were chosen from Appendix A (model calibration) of the book [Mathematical and Computational Modeling of Tonality](https://link.springer.com/book/10.1007/978-1-4614-9475-1), where the author uses an heuristic approach explained in great detail.
 
@@ -235,9 +237,9 @@ scatter!(min_keys[1], min_keys[2], min_keys[3], m=:star, color=:orange, ms=12, l
 
 The center of effect is an algorithm developed to find the most likely tonality (key) for a given set of notes in the spiral array, $P = \{\vec{p}_1, \vec{p}_2,...,\vec{p}_N\}$. This algorithm uses the concept of *center of mass* to represent the notes with an **effective** tonal center in the form of a linear combination of the positions of the notes in the spiral array:
 
-$$
+```math
     \vec{C}_e = \sum_{i=1}^N \omega_i \vec{p_i},
-$$
+```
 
 where the weights $\omega_i$ represent the *importance* of the note and to mantain the values within the same boundaries the weights are normalized $\sum_i w_i = 1$. 
 
@@ -245,9 +247,9 @@ Weights can be built however we want, but one of the most natural musical featur
 
 In summary, the Center of Effect (CoE) key finding algorithm uses the vector $\vec{C}_e$ for the set of notes, and defines the most likely key as:
 
-$$
+```math
     \operatorname{argmin}_{T \in \mathbf{T}} || \vec{C}_e - \vec{T} ||,
-$$
+```
 
 which corresponds to the key $T$ for which the euclidean distance to the measure is minimum. Here $\mathbf{T}$ is the set of possible major and minor keys: $\mathbf{T} = \{ \mathbf{T}_M(k) \forall k\} \cup \{\mathbf{T}_m(k) \forall k \}$.
 
