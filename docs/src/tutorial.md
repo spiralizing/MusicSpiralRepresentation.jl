@@ -97,13 +97,13 @@ $$
 
 where $k+1$ and $k-1$ are the dominant and the subdominant chords, the minor key representations are given by:
 
-\begin{equation}
+$$
 \begin{aligned}
-    \vec{T}_m(k) = {} & \nu_1 \vec{C}_m(k) \\ 
+    \vec{T}_m(k) = {} & \nu_1 \vec{C}_m(k) \\
                 & + \nu_2 [ \alpha \vec{C}_M(k+1) + (1-\alpha) \vec{C}_m(k+1) ] \\
                 & + \nu_3 [ \beta \vec{C}_m(k-1) + (1-\beta) \vec{C}_M(k-1)],
 \end{aligned}
-\end{equation}
+$$
 
 this definition require two extra parameters to weight the different scale patterns that are presented in minor keys (natural, harmonic minor and melodic minor) given by the major and minor dominant and subdominant chords, the parameters $\alpha$ and $\beta$ are set equally: $$\beta = \alpha = 0.75.$$ 
 
@@ -242,10 +242,10 @@ Weights can be built however we want, but one of the most natural musical featur
 In summary, the Center of Effect (CoE) key finding algorithm uses the vector $\vec{C}_e$ for the set of notes, and defines the most likely key as:
 
 $$
-    \argmin_{T \in \bm{T}} || \vec{C}_e - \vec{T} ||,
+    \operatorname{argmin}_{T \in \mathbf{T}} || \vec{C}_e - \vec{T} ||,
 $$
 
-which corresponds to the key $T$ for which the euclidean distance to the measure is minimum. Here $\bm{T}$ is the set of possible major and minor keys: $\bm{T} = \{ \bm{T}_M(k) \forall k\} \cup \{\bm{T}_m(k) \forall k \}$.
+which corresponds to the key $T$ for which the euclidean distance to the measure is minimum. Here $\mathbf{T}$ is the set of possible major and minor keys: $\mathbf{T} = \{ \mathbf{T}_M(k) \forall k\} \cup \{\mathbf{T}_m(k) \forall k \}$.
 
 To exemplify how it works, let's do one of the simplest tests: 
 <p style="text-align: center;">What key are the C major and c minor chords?</p>
