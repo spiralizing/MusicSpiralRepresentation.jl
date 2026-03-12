@@ -1,6 +1,6 @@
-global pitch_names = ["C","G","D","A","E","B","Gb/F#","Db","Ab","Eb","Bb","F"]
-global nMajor_keys = ["C", "G", "D", "A","E", "B/Cb","Gb/F#","Db/C#","Ab","Eb", "Bb","F"]
-global nminor_keys = ["c","g","d","a","e","b","f#","c#","g#/ab","eb/d#","bb","f"]
+global pitch_names = ["C", "G", "D", "A", "E", "B", "Gb/F#", "Db", "Ab", "Eb", "Bb", "F"]
+global nMajor_keys = ["C", "G", "D", "A", "E", "B/Cb", "Gb/F#", "Db/C#", "Ab", "Eb", "Bb", "F"]
+global nminor_keys = ["c", "g", "d", "a", "e", "b", "f#", "c#", "g#/ab", "eb/d#", "bb", "f"]
 #handwritting the functional harmony notations "key or chord relative to the fundamental"
 #Major roman numerals, for the coe notation.
 Major_RN = Dict(0 => "I",
@@ -33,11 +33,12 @@ Minor_RN = Dict(0 => "i",
     5 => "vii",
 )
 global nall_keys = [] #All keys
-for (a,b) in zip(nminor_keys,nMajor_keys)
-    push!(nall_keys,a); push!(nall_keys,b)
+for (a, b) in zip(nminor_keys, nMajor_keys)
+    push!(nall_keys, a)
+    push!(nall_keys, b)
 end
 global cf_notes = [0, 7, 2, 9, 4, 11, 6, 1, 8, 3, 10, 5]
-global midi_notes = ["C","C#","D","Eb","E","F","F#","G","G#","A","Bb","B"]
+global midi_notes = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "G#", "A", "Bb", "B"]
 #the real value of the notes in the circle of fifths, chromatic scale representation from C = 0 to B = 11
 # r = 1
 # h = sqrt(2/15)
@@ -108,8 +109,8 @@ end
     The vector "v" contains the weights used for each chord and "w" are the weights on each note in the major chords.
     "u" are the weights for the minor chords. The dominant and subdominant minor/major chords are weighted by "a" and "b".
 """
-function get_minor_key(k; v=[0.536, 0.274, 0.19], w=[0.536, 0.274, 0.19], u=[0.536, 0.274, 0.19], a=0.75, b=0.75, r=1, h=sqrt(2/15))
-    Tm = v[1]*get_minor_chord(k, u=u, r=r, h=h) + v[2]*(a*get_Major_chord(k+1, w=w, r=r, h=h) + (1-a)*get_minor_chord(k+1, u=u, r=r, h=h)) + v[3]*(b*get_minor_chord(k-1, u=u, r=r, h=h) + (1-b)*get_Major_chord(k-1, w=w, r=r, h=h))
+function get_minor_key(k; v=[0.536, 0.274, 0.19], w=[0.536, 0.274, 0.19], u=[0.536, 0.274, 0.19], a=0.75, b=0.75, r=1, h=sqrt(2 / 15))
+    Tm = v[1] * get_minor_chord(k, u=u, r=r, h=h) + v[2] * (a * get_Major_chord(k + 1, w=w, r=r, h=h) + (1 - a) * get_minor_chord(k + 1, u=u, r=r, h=h)) + v[3] * (b * get_minor_chord(k - 1, u=u, r=r, h=h) + (1 - b) * get_Major_chord(k - 1, w=w, r=r, h=h))
     return Tm
 end
 
@@ -119,6 +120,7 @@ major_chords = map(x -> get_Major_chord(x), notes)
 minor_chords = map(x -> get_minor_chord(x), notes)
 major_keys = map(x -> get_Major_key(x), notes)
 minor_keys = map(x -> get_minor_key(x), notes)
+pos_all_chords = vcat(major_chords, minor_chords)
 pos_all_keys = vcat(major_keys, minor_keys)
 #Defining all circle of fifth notes and names of major and minor keys
 midi_note_names = []
@@ -152,6 +154,9 @@ all_minor_keys = vcat(all_minor_keys...)
 all_keys = vcat(all_Major_keys, all_minor_keys)
 midi_note_names = vcat(midi_note_names...)
 all_pitch_names = vcat(all_pitch_names...)
+all_Major_chord_names = copy(all_Major_keys)
+all_minor_chord_names = copy(all_minor_keys)
+all_chords = vcat(all_Major_chord_names, all_minor_chord_names)
 
 """
     get_cfpitch_mod12(pitch_seq)
@@ -160,8 +165,8 @@ all_pitch_names = vcat(all_pitch_names...)
     to be consistent with the cylindrical representation, starting in C=0, G=1, ..., etc.
 """
 function get_cfpitch_mod12(pitch_seq)
-    m12v = convert(Array{Int64,1},map(x->mod(x,12),pitch_seq))
-    return map(y->findfirst(x->x==y,cf_notes)-1,m12v)
+    m12v = convert(Array{Int64,1}, map(x -> mod(x, 12), pitch_seq))
+    return map(y -> findfirst(x -> x == y, cf_notes) - 1, m12v)
 end
 
 """
@@ -171,5 +176,5 @@ end
     to be consistent with the cylindrical representation, starting in C=0, G=1, ..., etc.
 """
 function get_cfpitch(pitch_seq)
-    return map(y->findfirst(x->x==y,all_cf_notes)-1,pitch_seq)
+    return map(y -> findfirst(x -> x == y, all_cf_notes) - 1, pitch_seq)
 end

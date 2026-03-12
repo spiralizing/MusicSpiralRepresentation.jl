@@ -258,7 +258,7 @@ function get_piece_by_measure_csv(s; qdiv=32, abs_time=true)
         out_measures = chunked_voice
     end
     #if res_frac > 0.05
-     #   println("WARNING!!! \n THE FRACTION OF NOTES FALLING OUTSIDE THE MIDI CLOCK IS: $(res_frac)")
+    #   println("WARNING!!! \n THE FRACTION OF NOTES FALLING OUTSIDE THE MIDI CLOCK IS: $(res_frac)")
     #end
     return filter(x -> !isempty(x), out_measures), [length(residues) n_off]
 end
@@ -394,31 +394,33 @@ end
         representing the notes in MIDI notation and d each of their durations.
 
 """
-function get_center_effect(chunk_notes :: Matrix{<:Any}; r=1, h=sqrt(2 / 15), all_keys=all_keys, pos_all_keys=pos_all_keys, sbeat_w=[[1.0], [1.0]], lin_w=1)
-    ptcs = chunk_notes[:,6]
-    durs = chunk_notes[:,5]
-    pbeat = chunk_notes[:,1]
+function get_center_effect(chunk_notes::Matrix{<:Any}; r=1, h=sqrt(2 / 15), all_keys=all_keys, pos_all_keys=pos_all_keys, sbeat_w=[[1.0], [1.0]], lin_w=1)
+    ptcs = convert(Vector{Int},chunk_notes[:, 6])
+    durs = chunk_notes[:, 5]
+    pbeat = chunk_notes[:, 1]
     beat_w = ones(length(durs)) #array of the beat weights
     for b = 1:length(sbeat_w[1])
-        loc_b = findall(x-> x==sbeat_w[1][b], pbeat) #finding all notes that start at beat sbeat_w[1][b]
+        loc_b = findall(x -> x == sbeat_w[1][b], pbeat) #finding all notes that start at beat sbeat_w[1][b]
         beat_w[loc_b] .= sbeat_w[2][b] #this is the weight.
     end
     notas, n_we = get_local_lin_w(ptcs, lin_w) #doing the linear weight in the pitches
-    ii = vcat(map(x-> findall(y-> y==x, notas), ptcs)...)
+    ii = vcat(map(x -> findall(y -> y == x, notas), ptcs)...)
     #println(ptcs)
     b_wei = n_we[ii] #getting the linear weight for every note i n the array of pitches
-    
-    spi_ix = cluster_notes(ptcs) .+ 24
 
-    spi_p = map(x-> get_pitch(x, r=r, h=h), spi_ix) #getting the location (x,y,z) for each pitch
-    t_ws = map((x,y,z)-> x*y*z, beat_w,durs, b_wei) #computing the total weights
-    cv_i = map((x,y)-> x*y, t_ws, spi_p) / sum(t_ws) #computing the location of the pitches with their relative weights
+    #spi_ix = cluster_notes(ptcs) .+ 24
+    #map to spiral array
+    spi_notes = map(x -> get_cfpitch(x), ptcs)
+    spi_ix = circular_to_linear(spi_notes)
+    spi_p = map(x -> get_pitch(x, r=r, h=h), spi_ix) #getting the location (x,y,z) for each pitch
+    t_ws = map((x, y, z) -> x * y * z, beat_w, durs, b_wei) #computing the total weights
+    cv_i = map((x, y) -> x * y, t_ws, spi_p) / sum(t_ws) #computing the location of the pitches with their relative weights
     c_i = sum(cv_i) #finding the center of effect
     return c_i
 end
 
 function get_center_effect(seq_notes::AbstractVector{<:Number}; r=1, h=sqrt(2 / 15), all_keys=all_keys, pos_all_keys=pos_all_keys, sbeat_w=[[1.0], [1.0]], lin_w=1)
-    ptcs = seq_notes
+    ptcs = convert(Vector{Int},seq_notes)
     durs = [1 for _ = 1:length(seq_notes)]
     pbeat = [1 for _ = 1:length(seq_notes)]
     beat_w = ones(length(durs)) #array of the beat weights
@@ -431,8 +433,9 @@ function get_center_effect(seq_notes::AbstractVector{<:Number}; r=1, h=sqrt(2 / 
     #println(ptcs)
     b_wei = n_we[ii] #getting the linear weight for every note i n the array of pitches
 
-    spi_ix = cluster_notes(ptcs) .+ 24
-
+    #spi_ix = cluster_notes(ptcs) .+ 24
+    spi_notes = map(x -> get_cfpitch(x), ptcs)
+    spi_ix = circular_to_linear(spi_notes)
     spi_p = map(x -> get_pitch(x, r=r, h=h), spi_ix) #getting the location (x,y,z) for each pitch
     t_ws = map((x, y, z) -> x * y * z, beat_w, durs, b_wei) #computing the total weights
     cv_i = map((x, y) -> x * y, t_ws, spi_p) / sum(t_ws) #computing the location of the pitches with their relative weights
@@ -441,7 +444,7 @@ function get_center_effect(seq_notes::AbstractVector{<:Number}; r=1, h=sqrt(2 / 
 end
 
 function get_center_effect(notes::AbstractVector{<:Number}, durs::AbstractVector{<:Number}; r=1, h=sqrt(2 / 15), all_keys=all_keys, pos_all_keys=pos_all_keys, sbeat_w=[[1.0], [1.0]], lin_w=1)
-    ptcs = notes
+    ptcs = Int.(notes)
     #durs = [1 for i = 1:length(seq_notes)]
     pbeat = [1 for _ = 1:length(notes)]
     beat_w = ones(length(durs)) #array of the beat weights
@@ -454,8 +457,10 @@ function get_center_effect(notes::AbstractVector{<:Number}, durs::AbstractVector
     #println(ptcs)
     b_wei = n_we[ii] #getting the linear weight for every note i n the array of pitches
 
-    spi_ix = cluster_notes(ptcs) .+ 24
-
+    #spi_ix = cluster_notes(ptcs) .+ 24
+    spi_notes = map(x -> get_cfpitch(x), ptcs)
+    spi_ix = circular_to_linear(spi_notes)
+    
     spi_p = map(x -> get_pitch(x, r=r, h=h), spi_ix) #getting the location (x,y,z) for each pitch
     t_ws = map((x, y, z) -> x * y * z, beat_w, durs, b_wei) #computing the total weights
     cv_i = map((x, y) -> x * y, t_ws, spi_p) / sum(t_ws) #computing the location of the pitches with their relative weights
@@ -468,7 +473,13 @@ function get_distance_to_keys(c_i)
 
     ranking = sortperm(d_to_keys) #ranking the distances from the closest to the farthest
 
-    return [all_keys[ranking] d_to_keys[ranking]][1:22,:]
+    return [all_keys[ranking] d_to_keys[ranking]][1:22, :]
+end
+
+function get_distance_to_chords(c_i)
+    d_to_chords = round.(map(x -> euclidean(c_i, x), pos_all_chords), digits=4)
+    ranking = sortperm(d_to_chords)
+    return [all_chords[ranking] d_to_chords[ranking]][1:22, :]
 end
 
 function get_xml_df(piece_xml)
