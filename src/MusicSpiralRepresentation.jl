@@ -4,7 +4,8 @@ using Distances
 using EzXML
 using LinearAlgebra
 using MIDI
-using PyCall
+#using PyCall #uncomment this line if you want 
+# to use the python library music21 as fallback.
 using Statistics
 using ZipFile
 #
