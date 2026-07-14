@@ -68,7 +68,7 @@ function find_more_voices(v)
 end
 
 function filter_undef!(voces)
-    tt = map(x -> isassigned(x), voces)
+    tt = map(i -> isassigned(voces, i), eachindex(voces))
     deleteat!(voces, findall(x -> x == false, tt))
 end
 function max_tempo(Voces, ns) #la funcion encuentra el tiempo maximo de termino de notas, es decir donde termina la pieza
